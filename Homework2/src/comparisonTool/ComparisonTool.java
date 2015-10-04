@@ -24,24 +24,22 @@ public class ComparisonTool
 	/**
 	 * Compares the given javaFiles and returns string of their differences
 	 * 
-	 * @param priginalJavaFile file location for first java file to compare
+	 * @param originalJavaFile file location for first java file to compare
 	 * @param changedJavaFile file location for second java file to compare
 	 * @return string of differences
 	 * @throws IOException 
 	 */
 	public String Compare(String originalJavaFile, String changedJavaFile) throws IOException
 	{
-		File file1 = new File(originalJavaFile);
-		File file2 = new File(changedJavaFile);
-		BufferedReader reader = new BufferedReader(new FileReader(file1));
 		originalFileItems = ParseFile(originalJavaFile);
 		lookingAtChangedFile = true;
 		changedFileItems = ParseFile(changedJavaFile);
 		
-		ArrayList<Method> list = (ArrayList<Method>) compareMethods(originalFileItems.Methods, changedFileItems.Methods);
+		compareMethods(originalFileItems.Methods, changedFileItems.Methods);
+		compareFields(originalFileItems.Fields, changedFileItems.Fields);
 		
 		
-		return "Not implemented";
+		return "Not fully implemented";
 	}
 	
 	private FileItems ParseFile(String javaFile) throws IOException
@@ -59,7 +57,7 @@ public class ComparisonTool
 			//skip line if it is commented out or blank
 			if (line.contains("//")) line = reader.readLine();
 			
-			String[] tokens = line.split("[ ]+");	// words save to an arry, spaces as deliminators
+			String[] tokens = line.split("[ ]+");	// words save to an array, spaces as deliminators
 			
 			//Checks for initializers
 			if (line.contains("=") && !line.contains("==")) ; //Does nothing
@@ -113,6 +111,8 @@ public class ComparisonTool
 					fieldModifier = tokens[0];
 				}
 				else fieldName = tokens[1];
+				if (fieldName.contains(";")) fieldName.replace(";", "");	// Removes semi-colon if present
+				
 				boolean checkIfNew = true;
 				if (lookingAtChangedFile)
 				{
@@ -125,6 +125,7 @@ public class ComparisonTool
 				fieldList.add(new Field(checkIfNew, tokens[0], "", javaFile, fieldName));
 
 			}
+			
 			line = reader.readLine();
 		}
 		FileItems items = new FileItems();
@@ -133,7 +134,7 @@ public class ComparisonTool
 		return items;
 	}
 	
-	private ArrayList<Method> compareMethods(List<Method> originalMethods, List<Method> changedMethods)
+	private void compareMethods(List<Method> originalMethods, List<Method> changedMethods)
 	{
 		for (int i=0; (i<originalMethods.size() && i<changedMethods.size()); i++) {
 			Method original = originalMethods.get(i);
@@ -164,8 +165,27 @@ public class ComparisonTool
 				if (found == false) System.out.println(original.MethodName + " is Deleted");
 			}
 		}
-		
-		return null;
+	}
+	
+	private void compareFields(List<Field> originalFields, List<Field> changedFields)
+	{
+		for (int i=0; i < originalFields.size(); i++) {
+			Field originalF = originalFields.get(i);
+			int j=0;
+			boolean presentInChangedFile = false;
+			// Iterate through changedFields list to check if field is deleted or modifier is changed
+			while (j < changedFields.size()) {
+				Field changedF = changedFields.get(j);
+				if (changedF.FieldName.equals(originalF.FieldName)) {
+					presentInChangedFile = true;
+					if (!changedF.Modifier.equals(originalF.Modifier)) {
+						System.out.println("The field modifier of " + originalF.FieldName + " was changed from " + originalF.Modifier + " to " + changedF.Modifier);
+					}
+				}
+				j++;
+			}
+			if (!presentInChangedFile) System.out.println("The field " + originalF.FieldName + " was deleted");
+		}
 	}
 	
 }
