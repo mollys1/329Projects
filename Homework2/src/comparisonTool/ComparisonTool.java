@@ -40,7 +40,7 @@ public class ComparisonTool
 		compareFields(originalFileItems.Fields, changedFileItems.Fields);
 		
 		
-		return "Not fully implemented";
+		return "Finished Comparing " + originalJavaFile + " and " + changedJavaFile;
 	}
 	
 	private FileItems ParseFile(String javaFile) throws IOException
@@ -106,13 +106,15 @@ public class ComparisonTool
 			//Check for fields
 			else if (!(line.contains("(") || line.contains(")") || line.contains("{") || line.contains("}")) && line.length() > 1 && openBracketCount == 1)
 			{
-				String fieldName, fieldModifier, fieldInit;
+				String fieldName, fieldInit;
+				String fieldModifier = "";
 				fieldInit = null;
 				//field with modifier
 				if (line.contains("public") || line.contains("private"))
 				{
 					fieldName = tokens[2];
 					fieldModifier = tokens[0];
+					fieldModifier = fieldModifier.substring(fieldModifier.indexOf("p"), fieldModifier.length()); //Removes white spaces from start of line
 				}
 				else fieldName = tokens[1];
 				if (fieldName.contains(";")) fieldName = fieldName.substring(0, fieldName.indexOf(";"));	// Removes semi-colon if present
@@ -133,7 +135,7 @@ public class ComparisonTool
 					}
 					if (checkIfNew) System.out.println("The field " + fieldName + " has been added");
 				}
-				fieldList.add(new Field(checkIfNew, tokens[0], "", javaFile, fieldName, fieldInit));
+				fieldList.add(new Field(checkIfNew, fieldModifier, "", javaFile, fieldName, fieldInit));
 
 			}
 			
