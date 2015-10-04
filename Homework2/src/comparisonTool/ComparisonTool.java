@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class ComparisonTool
 		ArrayList<Method> methodList = new ArrayList<Method>();
 		ArrayList<Field> fieldList = new ArrayList<Field>();
 		File file1 = new File(javaFile);
-		BufferedReader reader = new BufferedReader(new FileReader(file1));
+		LineNumberReader reader = new LineNumberReader(new FileReader(file1));
 		String line = reader.readLine();
 		int methodPos = 0;
 		
@@ -71,12 +72,15 @@ public class ComparisonTool
 				m.MethodName = tokens[2].substring(0, tokens[2].indexOf('('));
 				if (lookingAtChangedFile == true) {
 					boolean checkIfNew = true;
-					for (int i=0; i<originalFileItems.Methods.size(); i++) {
+					for (int i=0; i<originalFileItems.Methods.size(); i++) {	//Iterate through original file methods to see if this is a new method
 						if (originalFileItems.Methods.get(i).MethodName.equals(m.MethodName)) checkIfNew = false;
 					}
 					m.IsNew = checkIfNew;
-					if (m.IsNew) System.out.println("The method " + m.MethodName + " has been added");
+					if (m.IsNew) {
+						System.out.println("The method " + m.MethodName + " has been added");
+					}
 				}
+				m.FilePosition = reader.getLineNumber();
 				methodList.add(m);
 			}
 			//Check for fields
@@ -116,7 +120,7 @@ public class ComparisonTool
 				// Check field initializations
 				if (line.contains("=") && !line.contains("==")) {
 					String lineSubstring = line.substring(line.indexOf("=")+1, line.length());
-					if (lineSubstring.contains(";")) lineSubstring = lineSubstring.substring(0, lineSubstring.indexOf(";"));
+					if (lineSubstring.contains(";")) lineSubstring = lineSubstring.substring(0, lineSubstring.indexOf(";"));	//Remove semi-colon if present
 					fieldInit = lineSubstring;
 				}
 				
@@ -145,35 +149,35 @@ public class ComparisonTool
 	
 	private void compareMethods(List<Method> originalMethods, List<Method> changedMethods)
 	{
-		for (int i=0; (i<originalMethods.size() && i<changedMethods.size()); i++) {
-			Method original = originalMethods.get(i);
-			Method changed = changedMethods.get(i);
-			
-			//check if method name at position i are equal
-			if (!original.MethodName.equals(changed.MethodName)) {
+		for (int i=0; i<originalMethods.size(); i++) {
+			Method originalM = originalMethods.get(i);
+			int j=0;
+			boolean presentInChangedFile = false;
+			//Iterate through changed methods list to look for this method from original files
+			while (j < changedMethods.size() && !presentInChangedFile) {
+				Method changedM = changedMethods.get(j);
 				
-				//Iterate through Changed Methods to check for a moved position
-				int j =0;
-				boolean found = false;
-				while (j<changedMethods.size()) {
-					if (changedMethods.get(j).MethodName.equals(original.MethodName) && i!=j) {
+				//If method exists in changed methods, check for position change
+				if (changedM.MethodName.equals(originalM.MethodName)) {
+					presentInChangedFile = true;
 					
-						//CURRENTLY CHECKING IF POSITION CHANGED BECAUSE OF A NEW METHOD
-						//IF SO IT DID NOT MOVE
-						if (changedMethods.get(j-1).IsNew) {
-							System.out.println("The method " + original.MethodName + " moved from position " + original.Position + " to " + changedMethods.get(j).Position);
-						}
-						
-						found = true;
-						break;
+					if (changedM.Position != originalM.Position && changedMethods.get(j-1).IsNew) {
+						System.out.println("The method " + originalM.MethodName + " changed position from " + originalM.Position + " to " + changedM.Position);
 					}
 					
-					j++;
+					compareMethodBodies(originalM, changedM);
 				}
 				
-				if (found == false) System.out.println("The method " + original.MethodName + " is Deleted");
+				j++;
+			}
+			if (!presentInChangedFile) {
+				System.out.println("The method " + originalM.MethodName + " was deleted");
 			}
 		}
+	}
+	
+	private void compareMethodBodies(Method originalMethod, Method changedMethod) {
+		
 	}
 	
 	private void compareFields(List<Field> originalFields, List<Field> changedFields)
@@ -198,10 +202,12 @@ public class ComparisonTool
 					if (changedF.FieldInit != null && originalF.FieldInit == null) {
 						System.out.println("The field initialization of " + changedF.FieldName + " has been added and is initialized to " + changedF.FieldInit);
 					}
+					//2nd check if initialization is deleted
 					else if (changedF.FieldInit == null && originalF.FieldInit != null)
 					{
 						System.out.println("The initialization of field " + changedF.FieldName + " has been deleted");
 					}
+					//3rd check if modifer has changed
 					else if (changedF.FieldInit != null && originalF.FieldInit != null) {
 						if (!changedF.FieldInit.equals(originalF.FieldInit)) {
 							System.out.println("The field initialization of " + changedF.FieldName + " has been changed from " + originalF.FieldInit + " to " + changedF.FieldInit);
