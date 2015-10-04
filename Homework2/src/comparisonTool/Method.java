@@ -24,4 +24,10 @@ public class Method
 	 * File which the method is contained in
 	 */
 	String JavaFileName;
+	
+	
+    /**
+     * Name of the method.
+     */
+    String MethodName;
 }

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * @author Molly
  *
@@ -17,8 +18,8 @@ import java.util.List;
 public class ComparisonTool 
 {
 	boolean lookingAtChangedFile = false;
-	
-	ArrayList<Method> originalMethods, changedMethods;
+
+	FileItems originalFileItems, changedFileItems;
 	
 	/**
 	 * Compares the given javaFiles and returns string of their differences
@@ -33,29 +34,39 @@ public class ComparisonTool
 		File file1 = new File(originalJavaFile);
 		File file2 = new File(changedJavaFile);
 		BufferedReader reader = new BufferedReader(new FileReader(file1));
-		originalMethods = (ArrayList<Method>) ParseFile(originalJavaFile);
+		originalFileItems = ParseFile(originalJavaFile);
 		lookingAtChangedFile = true;
-		changedMethods = (ArrayList<Method>) ParseFile(changedJavaFile);
+		changedFileItems = ParseFile(changedJavaFile);
 		
-		ArrayList<Method> list = (ArrayList<Method>) compareMethods(originalMethods, changedMethods);
+		ArrayList<Method> list = (ArrayList<Method>) compareMethods(originalFileItems.Methods, changedFileItems.Methods);
 		
 		
 		return "Not implemented";
 	}
 	
-	private List<Method> ParseFile(String javaFile) throws IOException
+	private FileItems ParseFile(String javaFile) throws IOException
 	{
-		ArrayList<Method> list = new ArrayList<Method>();
+		boolean withinClass = false; //is parser within a class (i.e. where fields would be declared)
+		int openBracketCount = 0;
+		ArrayList<Method> methodList = new ArrayList<Method>();
+		ArrayList<Field> fieldList = new ArrayList<Field>();
 		File file1 = new File(javaFile);
 		BufferedReader reader = new BufferedReader(new FileReader(file1));
 		String line = reader.readLine();
 		int methodPos = 0;
 		
 		while (line != null) {
+			//skip line if it is commented out or blank
+			if (line.contains("//")) line = reader.readLine();
+			
 			String[] tokens = line.split("[ ]+");	// words save to an arry, spaces as deliminators
 			
 			//Checks for initializers
 			if (line.contains("=") && !line.contains("==")) ; //Does nothing
+			
+			//Keep bracket count
+			if (line.contains("{")) openBracketCount++;
+			if (line.contains("}")) openBracketCount--;
 			
 			//Checks for methods
 			if (line.contains("(") && line.contains(")") && (line.contains("public") || line.contains("private"))) {
@@ -65,29 +76,67 @@ public class ComparisonTool
 				m.MethodName = tokens[2].substring(0, tokens[2].indexOf('('));
 				if (lookingAtChangedFile == true) {
 					boolean checkIfNew = true;
-					for (int i=0; i<originalMethods.size(); i++) {
-						if (originalMethods.get(i).MethodName.equals(m.MethodName)) checkIfNew = false;
+					for (int i=0; i<originalFileItems.Methods.size(); i++) {
+						if (originalFileItems.Methods.get(i).MethodName.equals(m.MethodName)) checkIfNew = false;
 					}
 					m.IsNew = checkIfNew;
 					if (m.IsNew) System.out.println(m.MethodName + " has been added");
 				}
-				list.add(m);
+				methodList.add(m);
 			}
-			
-			
-			
-			
-			
+			//Check for fields
+			//Check for fields that have modifiers
+			//If open bracket count is 1 then within class but not within method
+//			else if (!(line.contains("(") && line.contains(")") && line.contains("{") && line.contains("}")) && (line.contains("public") || line.contains("private")) && openBracketCount == 1)
+//			{
+//				String fieldName = tokens[2];
+//				boolean checkIfNew = true;
+//				if (lookingAtChangedFile)
+//				{
+//					for (int i=0; i<originalFileItems.Fields.size(); i++)
+//					{
+//						if (originalFileItems.Fields.get(i).FieldName.equals(fieldName)) checkIfNew = false;
+//					}
+//					if (checkIfNew) System.out.println(fieldName + " has been added");
+//				}
+//				fieldList.add(new Field(checkIfNew, tokens[0], "", javaFile, fieldName));
+//				System.out.println("Field with modifier: " + line.trim());
+//			}
+			//Check for fields
+			else if (!(line.contains("(") || line.contains(")") || line.contains("{") || line.contains("}")) && line.length() > 1 && openBracketCount == 1)
+			{
+				String fieldName, fieldModifier;
+				//field with modifier
+				if (line.contains("public") || line.contains("private"))
+				{
+					fieldName = tokens[2];
+					fieldModifier = tokens[0];
+				}
+				else fieldName = tokens[1];
+				boolean checkIfNew = true;
+				if (lookingAtChangedFile)
+				{
+					for (int i=0; i<originalFileItems.Fields.size(); i++)
+					{
+						if (originalFileItems.Fields.get(i).FieldName.equals(fieldName)) checkIfNew = false;
+					}
+					if (checkIfNew) System.out.println(fieldName + " has been added");
+				}
+				fieldList.add(new Field(checkIfNew, tokens[0], "", javaFile, fieldName));
+
+			}
 			line = reader.readLine();
 		}
-
-		return list;
+		FileItems items = new FileItems();
+		items.Methods = methodList;
+		items.Fields = fieldList;
+		return items;
 	}
 	
-	private ArrayList<Method> compareMethods(ArrayList<Method> orignalMethods, ArrayList<Method> changedMethods)
+	private ArrayList<Method> compareMethods(List<Method> originalMethods, List<Method> changedMethods)
 	{
 		for (int i=0; (i<originalMethods.size() && i<changedMethods.size()); i++) {
-			Method original = orignalMethods.get(i);
+			Method original = originalMethods.get(i);
 			Method changed = changedMethods.get(i);
 			
 			//check if method name at position i are equal

@@ -12,6 +12,8 @@ public class Test
 	public int TestDelete = 5;
 	public int TestModifierChange = 14;
 	
+	//test field that doesn't have modifier
+	int TestNoModifier;
 	
 	public void TestMethod1()
 	{
