@@ -22,12 +22,18 @@ public class Field
      */
     String FieldName;
     
-    public Field(boolean isNew, String modifier, String className, String javaFile, String fieldName)
+    /**
+     * Initialization value of the field
+     */
+    String FieldInit;
+    
+    public Field(boolean isNew, String modifier, String className, String javaFile, String fieldName, String fieldInit)
     {
     	IsNew = isNew;
     	Modifier = modifier;
     	ClassName = className;
     	JavaFileName = javaFile;
     	FieldName = fieldName;
+    	FieldInit = fieldInit;
     }
 }

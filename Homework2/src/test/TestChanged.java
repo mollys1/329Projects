@@ -10,6 +10,8 @@ public class TestChanged
 	public int Test = 0;
 	public int TestChangeValue = 3;
 	private int TestModifierChange = 14;
+	public int TestInitializationAddition = 1;
+	public int TestInitializationDeletion;
 	
 	public void TestMethod1()
 	{

@@ -11,6 +11,8 @@ public class Test
 	public int TestChangeValue = 1;
 	public int TestDelete = 5;
 	public int TestModifierChange = 14;
+	public int TestInitializationAddition;
+	public int TestInitializationDeletion = 1;
 	
 	//test field that doesn't have modifier
 	int TestNoModifier;
