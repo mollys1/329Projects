@@ -147,7 +147,7 @@ public class ComparisonTool
 		return items;
 	}
 	
-	private void compareMethods(List<Method> originalMethods, List<Method> changedMethods)
+	private void compareMethods(List<Method> originalMethods, List<Method> changedMethods) throws IOException
 	{
 		for (int i=0; i<originalMethods.size(); i++) {
 			Method originalM = originalMethods.get(i);
@@ -176,10 +176,50 @@ public class ComparisonTool
 		}
 	}
 	
-	private void compareMethodBodies(Method originalMethod, Method changedMethod) {
+	private void compareMethodBodies(Method originalMethod, Method changedMethod) throws IOException
+	{
+		// Find start of method in both files
+		File file1 = new File(originalMethod.JavaFileName);
+		File file2 = new File(changedMethod.JavaFileName);
+		LineNumberReader readOriginal = new LineNumberReader(new FileReader(file1));
+		LineNumberReader readChanged = new LineNumberReader(new FileReader(file2));
+		String originalLine = readOriginal.readLine();
+		String changedLine = readChanged.readLine();
+		for (int i=2; i<=originalMethod.FilePosition; i++) originalLine = readOriginal.readLine();
+		for (int i=2; i<=changedMethod.FilePosition; i++) changedLine = readChanged.readLine();
 		
+		//Compare method bodies
+		//First find the { to start the method
+		int openBracketCount = 0;	//Keeping track of bracket count only in original method - if brackets were added or taken away, method change would show
+		int closedBracketCount = 0;
+		if (originalLine.contains("{")) {
+			openBracketCount++;
+		}
+		else {
+			originalLine = readOriginal.readLine();
+			if (originalLine.contains("{")) openBracketCount++;
+		}
+		
+		if (!changedLine.contains("{")) changedLine = readChanged.readLine();	// if { not on first line, move to second line
+		
+		while (openBracketCount != closedBracketCount)
+		{
+			if (!originalLine.equals(changedLine)) {
+				System.out.println("The method body of " + originalMethod.MethodName + " has been changed");
+				break;
+			}
+			
+			originalLine = readOriginal.readLine();
+			changedLine = readChanged.readLine();
+			
+			if (originalLine.contains("{")) openBracketCount++;
+			if (originalLine.contains("}")) closedBracketCount++;
+		}
+		
+		readOriginal.close();
+		readChanged.close();
 	}
-	
+
 	private void compareFields(List<Field> originalFields, List<Field> changedFields)
 	{
 		for (int i=0; i < originalFields.size(); i++) {
