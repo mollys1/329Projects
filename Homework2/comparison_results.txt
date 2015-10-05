@@ -1,0 +1,13 @@
+Results from comparing C:\Users\Molly\Documents\GitHub\329Projects\Homework2\src\test\Test.java and C:\Users\Molly\Documents\GitHub\329Projects\Homework2\src\test\TestChanged.java
+The field TestAddedField has been added
+The method TestNewMethod has been added
+The method body of TestMethod_ToChange has been changed
+The method TestMethod_ToDelete was deleted
+The method TestMethod_ToMove changed position from 6 to 2
+The field TestDeletedField was deleted
+The field initialization of TestChangeValue has been changed from 1 to 3
+The field TestDelete was deleted
+The field modifier of TestModifierChange was changed from public to private
+The field initialization of TestInitializationAddition has been added and is initialized to 1
+The field initialization of TestInitializationDeletion has been deleted
+The field TestNoModifier was deleted
