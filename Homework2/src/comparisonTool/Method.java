@@ -13,7 +13,12 @@ public class Method
 	/**
 	 * Method's position within the class
 	 */
-	int Position; 
+	int MethodPosition; 
+	
+	/**
+	 * Method's line position in the file
+	 */
+	int FilePosition;
 	
 	/**
 	 * Class which the method is contained in
@@ -30,4 +35,14 @@ public class Method
      * Name of the method.
      */
     String MethodName;
+    
+    public Method(boolean isNew, int methodPosition, int filePosition, String className, String javaFile, String methodName)
+    {
+    	IsNew = isNew;
+    	MethodPosition = methodPosition;
+    	FilePosition = filePosition;
+    	ClassName = className;
+    	JavaFileName = javaFile;
+    	MethodName = methodName;
+    }
 }
