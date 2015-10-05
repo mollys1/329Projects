@@ -1,4 +1,4 @@
-Results from comparing C:\Users\Molly\Documents\GitHub\329Projects\Homework2\src\test\Test.java and C:\Users\Molly\Documents\GitHub\329Projects\Homework2\src\test\TestChanged.java
+Results from comparing C:\\Users\\Molly\\Documents\\GitHub\\329Projects\\Homework2\\src\\test\\Test.java and C:\\Users\\Molly\\Documents\\GitHub\\329Projects\\Homework2\\src\\test\\TestChanged.java
 The field TestAddedField has been added
 The method TestNewMethod has been added
 The method body of TestMethod_ToChange has been changed

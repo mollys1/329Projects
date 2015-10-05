@@ -7,10 +7,10 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		
 		String testFile, testChangedFile;
-		if (args.length == 3) //if files provided at the command line
+		if (args.length == 2) //if files provided at the command line
 		{
-			testFile = args[1];
-			testChangedFile = args[2];
+			testFile = args[0];
+			testChangedFile = args[1];
 			ComparisonTool compareTool = new ComparisonTool();
 			try
 			{
