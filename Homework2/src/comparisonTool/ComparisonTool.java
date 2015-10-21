@@ -35,7 +35,7 @@ public class ComparisonTool
 	public String Compare(String originalJavaFile, String changedJavaFile) throws IOException
 	{
 		outputFile = new FileWriter("comparison_results.txt");
-		outputFile.write("Results from comparing " + originalJavaFile + " and " + changedJavaFile + "\n");
+		outputFile.write("Results from comparing " + originalJavaFile + " and " + changedJavaFile + "\r\n");
 		 
 		originalFileItems = ParseFile(originalJavaFile);
 		lookingAtChangedFile = true;
@@ -45,7 +45,7 @@ public class ComparisonTool
 		compareFields(originalFileItems.Fields, changedFileItems.Fields);
 		
 		outputFile.close();
-		return "Finished Comparing " + originalJavaFile + " and " + changedJavaFile + "\nThe results are written to comparison_results.txt";
+		return "Finished Comparing " + originalJavaFile + " and " + changedJavaFile + "\r\nThe results are written to comparison_results.txt";
 	}
 	
 	/**
@@ -88,7 +88,7 @@ public class ComparisonTool
 						if (originalFileItems.Methods.get(i).MethodName.equals(methodName)) checkIfNew = false;
 					}
 					if (checkIfNew) {
-						outputFile.write("The method " + methodName + " has been added\n");
+						outputFile.write("The method " + methodName + " has been added\r\n");
 					}
 				}
 				int filePosition = reader.getLineNumber();
@@ -129,7 +129,7 @@ public class ComparisonTool
 					{
 						if (originalFileItems.Fields.get(i).FieldName.equals(fieldName)) checkIfNew = false;
 					}
-					if (checkIfNew) outputFile.write("The field " + fieldName + " has been added\n");
+					if (checkIfNew) outputFile.write("The field " + fieldName + " has been added\r\n");
 				}
 				fieldList.add(new Field(checkIfNew, fieldModifier, "", javaFile, fieldName, fieldInit));
 
@@ -171,7 +171,7 @@ public class ComparisonTool
 					presentInChangedFile = true;
 					
 					if (changedM.MethodPosition != originalM.MethodPosition && changedMethods.get(j-1).IsNew) {
-						outputFile.write("The method " + originalM.MethodName + " changed position from " + originalM.MethodPosition + " to " + changedM.MethodPosition + "\n");
+						outputFile.write("The method " + originalM.MethodName + " changed position from " + originalM.MethodPosition + " to " + changedM.MethodPosition + "\r\n");
 					}
 					
 					compareMethodBodies(originalM, changedM);
@@ -180,7 +180,7 @@ public class ComparisonTool
 				j++;
 			}
 			if (!presentInChangedFile) {
-				outputFile.write("The method " + originalM.MethodName + " was deleted\n");
+				outputFile.write("The method " + originalM.MethodName + " was deleted\r\n");
 			}
 		}
 	}
@@ -222,7 +222,7 @@ public class ComparisonTool
 		while (openBracketCount != closedBracketCount)
 		{
 			if (!originalLine.equals(changedLine)) {
-				outputFile.write("The method body of " + originalMethod.MethodName + " has been changed\n");
+				outputFile.write("The method body of " + originalMethod.MethodName + " has been changed\r\n");
 				break;
 			}
 			
@@ -260,29 +260,29 @@ public class ComparisonTool
 					
 					//Check modifiers
 					if (!changedF.Modifier.equals(originalF.Modifier)) {
-						outputFile.write("The field modifier of " + originalF.FieldName + " was changed from " + originalF.Modifier + " to " + changedF.Modifier + "\n");
+						outputFile.write("The field modifier of " + originalF.FieldName + " was changed from " + originalF.Modifier + " to " + changedF.Modifier + "\r\n");
 					}
 					
 					//Check initializations
 					//1st check if initialization is added
 					if (changedF.FieldInit != null && originalF.FieldInit == null) {
-						outputFile.write("The field initialization of " + changedF.FieldName + " has been added and is initialized to " + changedF.FieldInit + "\n");
+						outputFile.write("The field initialization of " + changedF.FieldName + " has been added and is initialized to " + changedF.FieldInit + "\r\n");
 					}
 					//2nd check if initialization is deleted
 					else if (changedF.FieldInit == null && originalF.FieldInit != null)
 					{
-						outputFile.write("The field initialization of " + changedF.FieldName + " has been deleted\n");
+						outputFile.write("The field initialization of " + changedF.FieldName + " has been deleted\r\n");
 					}
 					//3rd check if modifer has changed
 					else if (changedF.FieldInit != null && originalF.FieldInit != null) {
 						if (!changedF.FieldInit.equals(originalF.FieldInit)) {
-							outputFile.write("The field initialization of " + changedF.FieldName + " has been changed from " + originalF.FieldInit + " to " + changedF.FieldInit + "\n");
+							outputFile.write("The field initialization of " + changedF.FieldName + " has been changed from " + originalF.FieldInit + " to " + changedF.FieldInit + "\r\n");
 						}
 					}
 				}
 				j++;
 			}
-			if (!presentInChangedFile) outputFile.write("The field " + originalF.FieldName + " was deleted\n");
+			if (!presentInChangedFile) outputFile.write("The field " + originalF.FieldName + " was deleted\r\n");
 		}
 	}
 	
