@@ -18,4 +18,5 @@ public class Task
 	int EarlyFinish;
 	int LateStart;
 	int LateFinish;
+	ArrayList<String> DependencyFor = new ArrayList<String>();
 }

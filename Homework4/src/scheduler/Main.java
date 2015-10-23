@@ -48,14 +48,37 @@ public class Main {
 				}
 				tasks.add(newTask);
 				
-				line = reader.readLine();
+				line = reader.readLine();				
 			}
+			
+			
+			//Keeps track of what tasks are a dependency for
+			for (int i=0; i<tasks.size(); i++) {
+				Task t = tasks.get(i);
+				for (int j=0; j<t.Dependencies.size(); j++) {
+					Task dependencyTask = findTask(t.Dependencies.get(j), tasks);
+					if (dependencyTask != null) {
+						dependencyTask.DependencyFor.add(t.Name);
+					}
+					else {
+						System.out.println("There is an error with dependencies of " + t.Name);
+					}
+				}
+			}
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	private static Task findTask(String taskName, ArrayList<Task> tasks) {
+		for (int i=0; i<tasks.size(); i++) {
+			if (tasks.get(i).Name.equals(taskName)) return tasks.get(i);
+		}
+		return null;
 	}
 
 	
