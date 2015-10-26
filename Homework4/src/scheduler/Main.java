@@ -18,10 +18,13 @@ public class Main {
 		{
 			dataFileName = args[0];
 			tasks = new ArrayList<Task>();
-			parseDataFile("C:\\Users\\Sarah\\Documents\\Year 4\\SE 329\\test_data.csv");
-//			parseDataFile(dataFileName);
+			//parseDataFile("C:\\Users\\Sarah\\Documents\\Year 4\\SE 329\\test_data.csv");
+			//parseDataFile("C:\\Users\\Molly\\Documents\\GitHub\\329Projects\\Homework4\\test_circularDependency.csv");
+			parseDataFile(dataFileName);
 			PDMScheduler scheduler = new PDMScheduler();
-			scheduler.calculatePDMSchedule(tasks);
+			System.out.println(FindCycle.isCyclic(tasks));
+			
+			//scheduler.calculatePDMSchedule(tasks);
 		}
 		else
 		{
