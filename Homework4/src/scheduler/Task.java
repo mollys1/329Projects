@@ -13,6 +13,7 @@ public class Task
 {
 	String Name;
 	int Duration;
+<<<<<<< HEAD
 	ArrayList<String> Dependencies;
 	
 	
@@ -30,4 +31,12 @@ public class Task
 		}
 		else return false;
 	}
+=======
+	ArrayList<String> Dependencies = new ArrayList<String>();
+	int EarlyStart;
+	int EarlyFinish;
+	int LateStart;
+	int LateFinish;
+	ArrayList<String> DependencyFor = new ArrayList<String>();
+>>>>>>> origin/master
 }
