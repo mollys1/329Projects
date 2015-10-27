@@ -61,7 +61,7 @@ public class PDMScheduler {
 	}
 	
 	public ArrayList<String> findCriticalPath(ArrayList<Task> tasks){
-		if (!scheduleHasBeenCalculated) findCriticalPath(tasks);
+		if (!scheduleHasBeenCalculated) calculatePDMSchedule(tasks);
 		
 		return null;
 	}

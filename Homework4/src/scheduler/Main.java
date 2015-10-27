@@ -18,9 +18,9 @@ public class Main {
 		{
 			dataFileName = args[0];
 			tasks = new ArrayList<Task>();
-//			parseDataFile("C:\\Users\\Sarah\\Documents\\Year 4\\SE 329\\test_data.txt");
+			parseDataFile("C:\\Users\\Sarah\\Documents\\Year 4\\SE 329\\test_data.txt");
 			//parseDataFile("C:\\Users\\Molly\\Documents\\GitHub\\329Projects\\Homework4\\test_circularDependency.csv");
-			parseDataFile(dataFileName);
+//			parseDataFile(dataFileName);
 			PDMScheduler scheduler = new PDMScheduler();
 			System.out.println(FindCycle.isCyclic(tasks));
 			
@@ -43,7 +43,12 @@ public class Main {
 				//Create Task
 				Task newTask = new Task();
 				newTask.Name = tokens[0];
-				newTask.Duration = Integer.parseInt(tokens[1]);
+				try {
+					newTask.Duration = Integer.parseInt(tokens[1]);
+				} catch (NumberFormatException e) {
+					System.out.println("Error with the duration of Task " + newTask.Name);
+					e.printStackTrace();
+				} 
 				if (tokens.length > 2) {
 					String[] dependencyTokens = tokens[2].split("[,]+");
 					for (int i=0; i<dependencyTokens.length; i++) {
@@ -84,7 +89,6 @@ public class Main {
 		}
 		return null;
 	}
-
 	
 }
 
