@@ -36,4 +36,13 @@ public class Task
 		else return false;
 	}
 	
+	public boolean floatIsZero()
+	{
+		if (EarlyStart == LateStart && EarlyFinish == LateFinish)
+		{
+			return true;
+		}
+		else return false;
+	}
+	
 }

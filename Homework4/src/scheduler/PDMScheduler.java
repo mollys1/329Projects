@@ -1,12 +1,20 @@
 package scheduler;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class PDMScheduler {
 	
 	private boolean scheduleHasBeenCalculated = false;
+	private ArrayList<Task> tasks = new ArrayList<Task>();
 	
-	public void calculatePDMSchedule(ArrayList<Task> tasks) {
+	public PDMScheduler(ArrayList<Task> tasks)
+	{
+		this.tasks = tasks;
+	}
+	
+	
+	public void calculatePDMSchedule() {
 		scheduleHasBeenCalculated = true;
 		
 		//Calculate Early Starts and Finishes
@@ -21,7 +29,7 @@ public class PDMScheduler {
 				//Find dependency with highest early finish
 				int dependencyMaxEarlyFinish = 0;
 				for (int j=0; j<t.Dependencies.size(); j++) {
-					Task dependencyT = findTask(t.Dependencies.get(j), tasks);
+					Task dependencyT = findTask(t.Dependencies.get(j));
 					if (dependencyT != null) {
 						if (dependencyT.EarlyFinish > dependencyMaxEarlyFinish)
 								dependencyMaxEarlyFinish = dependencyT.EarlyFinish;
@@ -47,7 +55,7 @@ public class PDMScheduler {
 				//Find dependency with lowest late start
 				int dependencyForMinLateStart = Integer.MAX_VALUE;
 				for (int j=0; j<t.DependencyFor.size(); j++) {
-					Task dependencyForTask = findTask(t.DependencyFor.get(j), tasks);
+					Task dependencyForTask = findTask(t.DependencyFor.get(j));
 					if (dependencyForTask.LateStart < dependencyForMinLateStart)
 							dependencyForMinLateStart = dependencyForTask.LateStart;
 				}
@@ -60,8 +68,25 @@ public class PDMScheduler {
 		
 	}
 	
-	public ArrayList<String> findCriticalPath(ArrayList<Task> tasks){
-		if (!scheduleHasBeenCalculated) calculatePDMSchedule(tasks);
+	public ArrayList<String> findCriticalPath(){
+		if (!scheduleHasBeenCalculated) calculatePDMSchedule();
+		//create list of tasks that could be possible beginnings of critical paths
+		ArrayList<Task> startingTasks = new ArrayList<Task>();
+		for (int i = 0; i < tasks.size(); i++)
+		{
+			Task current = tasks.get(i);
+			if (current.EarlyStart == 0 && current.floatIsZero())
+			{
+				startingTasks.add(current);
+			}
+		}
+		//loop through starting tasks
+		for (int j = 0; j < startingTasks.size(); j++)
+		{
+			Task currentStarting = startingTasks.get(j);
+			recursiveFindPath(currentStarting);
+		}
+		
 		
 		return null;
 	}
@@ -74,11 +99,32 @@ public class PDMScheduler {
 	 * @param tasks
 	 * @return task we were looking for or null if not found
 	 */
-	private Task findTask(String taskName, ArrayList<Task> tasks) {
+	private Task findTask(String taskName) {
 		for (int i=0; i<tasks.size(); i++) {
 			if (tasks.get(i).Name.equals(taskName)) return tasks.get(i);
 		}
 		return null;
 	}
-
+	
+	private void recursiveFindPath(Task toCheck)
+	{
+		//base case
+		if (toCheck.floatIsZero() && toCheck.DependencyFor.size() == 0)
+		{
+			System.out.println(toCheck.Name);
+		}
+		else if (toCheck.floatIsZero())
+		{
+			for (int i = 0; i < toCheck.DependencyFor.size(); i++)
+			{
+				System.out.print(toCheck.Name);
+				recursiveFindPath(findTask(toCheck.DependencyFor.get(i)));
+			}
+		}
+		else
+		{
+			return;
+		}
+	}
+	
 }

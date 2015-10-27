@@ -21,9 +21,9 @@ public class Main {
 //			parseDataFile("C:\\Users\\Sarah\\Documents\\Year 4\\SE 329\\test_data.txt");
 			//parseDataFile("C:\\Users\\Molly\\Documents\\GitHub\\329Projects\\Homework4\\test_circularDependency.csv");
 			parseDataFile(dataFileName);
-			PDMScheduler scheduler = new PDMScheduler();
-			scheduler.calculatePDMSchedule(tasks);
-			scheduler.findCriticalPath(tasks);
+			PDMScheduler scheduler = new PDMScheduler(tasks);
+			scheduler.calculatePDMSchedule();
+			scheduler.findCriticalPath();
 		}
 		else
 		{
