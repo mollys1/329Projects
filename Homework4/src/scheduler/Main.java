@@ -25,6 +25,7 @@ public class Main {
 			System.out.println(FindCycle.isCyclic(tasks));
 			
 			scheduler.calculatePDMSchedule(tasks);
+			scheduler.findCriticalPath(tasks);
 		}
 		else
 		{
@@ -43,16 +44,23 @@ public class Main {
 				//Create Task
 				Task newTask = new Task();
 				newTask.Name = tokens[0];
+				// Check that duration is a number
 				try {
 					newTask.Duration = Integer.parseInt(tokens[1]);
 				} catch (NumberFormatException e) {
-					System.out.println("Error with the duration of Task " + newTask.Name);
-					e.printStackTrace();
+					System.out.println("Error with the duration of Task " + newTask.Name + "\nEnding Program");
+					System.exit(0);
 				} 
+				// Handle dependencies
 				if (tokens.length > 2) {
 					String[] dependencyTokens = tokens[2].split("[,]+");
 					for (int i=0; i<dependencyTokens.length; i++) {
-						newTask.Dependencies.add(dependencyTokens[i]);
+						Task dependency = findTask(dependencyTokens[i], tasks);
+						if (dependency == null) {
+							System.out.println("Dependencies must be predecessors\nError with dependencies of " + newTask.Name + "\nEnding Program");
+							System.exit(0);
+						}
+						else newTask.Dependencies.add(dependencyTokens[i]);
 					}
 				}
 				tasks.add(newTask);
@@ -70,7 +78,8 @@ public class Main {
 						dependencyTask.DependencyFor.add(t.Name);
 					}
 					else {
-						System.out.println("There is an error with dependencies of " + t.Name);
+						System.out.println("There is an error with dependencies of " + t.Name + "\nEndingProgram");
+						System.exit(0);
 					}
 				}
 			}
