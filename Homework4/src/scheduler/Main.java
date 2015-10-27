@@ -18,13 +18,13 @@ public class Main {
 		{
 			dataFileName = args[0];
 			tasks = new ArrayList<Task>();
-			//parseDataFile("C:\\Users\\Sarah\\Documents\\Year 4\\SE 329\\test_data.csv");
+//			parseDataFile("C:\\Users\\Sarah\\Documents\\Year 4\\SE 329\\test_data.txt");
 			//parseDataFile("C:\\Users\\Molly\\Documents\\GitHub\\329Projects\\Homework4\\test_circularDependency.csv");
 			parseDataFile(dataFileName);
 			PDMScheduler scheduler = new PDMScheduler();
 			System.out.println(FindCycle.isCyclic(tasks));
 			
-			//scheduler.calculatePDMSchedule(tasks);
+			scheduler.calculatePDMSchedule(tasks);
 		}
 		else
 		{
@@ -39,15 +39,16 @@ public class Main {
 			reader = new BufferedReader(new FileReader(inputFile));
 			String line = reader.readLine();
 			while (line != null) {
-				//Split the line into array of words, recognizing commas as the deliminators separating words
-				String[] tokens = line.split("[,]+");
-				
+				String[] tokens = line.split("[ ]+");
 				//Create Task
 				Task newTask = new Task();
 				newTask.Name = tokens[0];
 				newTask.Duration = Integer.parseInt(tokens[1]);
-				for (int i=2; i<tokens.length; i++) {
-					newTask.Dependencies.add(tokens[i]);
+				if (tokens.length > 2) {
+					String[] dependencyTokens = tokens[2].split("[,]+");
+					for (int i=0; i<dependencyTokens.length; i++) {
+						newTask.Dependencies.add(dependencyTokens[i]);
+					}
 				}
 				tasks.add(newTask);
 				
