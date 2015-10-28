@@ -1,12 +1,14 @@
 package scheduler;
 
 import java.util.ArrayList;
+import java.util.Queue;
 import java.util.Stack;
 
 public class PDMScheduler {
 	
 	private boolean scheduleHasBeenCalculated = false;
 	private ArrayList<Task> tasks = new ArrayList<Task>();
+	//private ArrayList<ArrayList<Task>> criticalPaths = new ArrayList<ArrayList<Task>>();
 	
 	public PDMScheduler(ArrayList<Task> tasks)
 	{
@@ -95,10 +97,9 @@ public class PDMScheduler {
 		for (int j = 0; j < startingTasks.size(); j++)
 		{
 			Task currentStarting = startingTasks.get(j);
+			path = new ArrayList<Task>();
 			recursiveFindPath(currentStarting);
 		}
-		
-		
 		return null;
 	}
 	
@@ -117,23 +118,34 @@ public class PDMScheduler {
 		return null;
 	}
 	
+	ArrayList<Task> path;
+	
 	private void recursiveFindPath(Task toCheck)
 	{
 		//base case
 		if (toCheck.floatIsZero() && toCheck.DependencyFor.size() == 0)
 		{
+			for (int i = 0; i < path.size(); i++)
+			{
+				System.out.print(path.get(i).Name);
+			}
 			System.out.println(toCheck.Name);
+			path = new ArrayList<Task>();
 		}
 		else if (toCheck.floatIsZero())
 		{
 			for (int i = 0; i < toCheck.DependencyFor.size(); i++)
 			{
-				System.out.print(toCheck.Name);
-				recursiveFindPath(findTask(toCheck.DependencyFor.get(i)));
+				//System.out.print(toCheck.Name);
+				path.add(toCheck);
+				//System.out.println(path.toString());
+				Task nextToCheck = findTask(toCheck.DependencyFor.get(i));
+				recursiveFindPath(nextToCheck);
 			}
 		}
-		else
+		else //not a valid path
 		{
+			path = new ArrayList<Task>();
 			return;
 		}
 	}

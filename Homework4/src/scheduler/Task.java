@@ -36,6 +36,12 @@ public class Task
 		else return false;
 	}
 	
+	@Override
+	public String toString()
+	{
+		return this.Name;
+	}
+	
 	public boolean floatIsZero()
 	{
 		if (EarlyStart == LateStart && EarlyFinish == LateFinish)
