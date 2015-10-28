@@ -42,14 +42,25 @@ public class PDMScheduler {
 				t.EarlyFinish = dependencyMaxEarlyFinish + t.Duration;
 			}
 		}
+		
+		//Find ending tasks max late finish
+		int maxLateFinish = 0;
+		for (int i=0; i<tasks.size(); i++) {
+			Task t = tasks.get(i);
+			if (t.DependencyFor.size() == 0) {
+				if (t.EarlyFinish > maxLateFinish) {
+					maxLateFinish = t.EarlyFinish;
+				}
+			}
+		}
 	
 		//Calculate Late Starts and Finishes
 		for (int i=(tasks.size()-1); i>=0; i--) {
 			Task t = tasks.get(i);
 			
 			if (t.DependencyFor.size() == 0) {
-				t.LateFinish = t.EarlyFinish;
-				t.LateStart = t.EarlyFinish - t.Duration;
+				t.LateFinish = maxLateFinish;
+				t.LateStart = t.LateFinish - t.Duration;
 			}
 			else {
 				//Find dependency with lowest late start
